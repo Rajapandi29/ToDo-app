@@ -3,6 +3,7 @@ name: PIPE-LINE
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch: 
 
 jobs:
   terraform-plan:
@@ -24,6 +25,7 @@ jobs:
       - run: terraform plan
 
   terraform-apply:
+    needs: terraform-plan 
     runs-on: ubuntu-latest
     environment: production
     defaults:
@@ -60,35 +62,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ToDo-app-dev:${{ github.sha }}-latest .
+          docker build -t todo-app-dev:${{ github.sha }}-latest .
 
       - name: Tag Docker image
         run: |
-          docker tag ToDo-app-dev:${{ github.sha }}-latest \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/ToDo-app-dev:${{ github.sha }}-latest
+          docker tag todo-app-dev:${{ github.sha }}-latest \
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
 
       - name: Push Docker image
         run: |
           docker push \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/ToDo-app-dev:${{ github.sha }}-latest
-
-
-  #terraform-destroy:
-   # runs-on: ubuntu-latest
-    #environment: production
-    #defaults:
-     # run:
-      #  working-directory: terraform
-    #steps:
-     # - uses: actions/checkout@v4
-      #- uses: hashicorp/setup-terraform@v3
-      #- name: Configure AWS credentials
-       # uses: aws-actions/configure-aws-credentials@v4
-        #with:
-         # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          #aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          #aws-region: us-east-1
-      #- run: terraform init
-      #S- run: terraform destroy -auto-approve
-
-  
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
