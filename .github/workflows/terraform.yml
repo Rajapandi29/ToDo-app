@@ -65,17 +65,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Set image variables
+        run: |
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+          ECR_REPOSITORY="${PROJECT_NAME}-${ENVIRONMENT}"
+
+          ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+          IMAGE_TAG="${GITHUB_SHA}-latest"
+
+      - name: Login to Amazon ECR
+        run: |
+         aws ecr get-login-password --region "$AWS_REGION" \
+          | docker login \
+          --username AWS \
+          --password-stdin "$ECR_REGISTRY"
+
       - name: Build Docker image
         run: |
-          docker build -t todo-app-dev:${{ github.sha }}-latest .
-
-      - name: Tag Docker image
-        run: |
-          docker tag todo-app-dev:${{ github.sha }}-latest \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
+          docker build \
+          -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            .
 
       - name: Push Docker image
         run: |
           docker push \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
-  
+          "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
