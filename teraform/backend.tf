@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "my-terraformstate-18-8"
-    key    = "buckets/my-terraformstate-18-8/mug"
+    key    = "my-terraformstate-18-8/mug"
     region = "us-east-1"
     encrypt = true
 
