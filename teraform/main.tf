@@ -30,7 +30,7 @@ resource "aws_sns_topic_policy" "allow_cloudwatch_eventbridge_publish" {
         Statement = [{
             Sid       = "AllowPublish"
             Effect    = "Allow"
-            Principal = {Service = ["://amazonaws.com", "://amazonaws.com"]}
+            Principal = {Service = ["cloudwatch.amazonaws.com", "events.amazonaws.com"]}
             Action    = "sns:Publish"
             Resource  = aws_sns_topic.alerts.arn
         }
