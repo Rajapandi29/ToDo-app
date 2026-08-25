@@ -22,17 +22,16 @@ resource "aws_ecs_cluster" "this" {
     name = "${var.project_name}-${var.environment}-cluster"
 }
 resource "aws_iam_role" "execution_role" {
-    name = "${var.project_name}-${var.environment}-exec-role"
+  name = "${var.project_name}-${var.environment}-exec-role"
 
-    assume_role_policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [{
-            Action     = "sts:AssumRole"
-            Effect     = "Allow"
-            Principal  = { Service = "ecs-tasks.amazonaws.com" 
-            }
-        }]
-    })
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "ecs-tasks.amazonaws.com" }
+    }]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role_policy" {
