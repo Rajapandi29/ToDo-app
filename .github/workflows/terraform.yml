@@ -3,8 +3,19 @@ name: PIPE-LINE
 on:
   pull_request:
     branches: [main]
-  workflow_dispatch: # Ungalukaaga manual trigger-um add panniruken, direct ah testing-ku help aagum!
-
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'What to run'
+        type: choice
+        required: true
+        default: 'plan'
+        options:
+          - plan
+          - apply
+          - destroy
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
