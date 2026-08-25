@@ -3,8 +3,10 @@ name: PIPE-LINE
 on:
   pull_request:
     branches: [main]
+
   push:
     branches: [main]
+
   workflow_dispatch:
     inputs:
       action:
@@ -16,74 +18,118 @@ on:
           - plan
           - apply
           - destroy
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: todo-app-dev
+
 jobs:
+
+  # =========================
+  # TERRAFORM PLAN
+  # =========================
+
   terraform-plan:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: teraform
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform plan
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+
+
+  # =========================
+  # TERRAFORM APPLY
+  # =========================
 
   terraform-apply:
-    needs: terraform-plan 
+    needs: terraform-plan
+
     runs-on: ubuntu-latest
+
     environment: production
+
     defaults:
       run:
         working-directory: teraform
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: terraform init
-      - run: terraform apply -auto-approve  
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+
+  # =========================
+  # DOCKER BUILD & PUSH
+  # =========================
 
   docker-build-deploy:
-     needs: terraform-apply
-     runs-on: ubuntu-latest
-     steps:
-      - uses: actions/checkout@v4
+    needs: terraform-apply
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Login to ECR
-        id: login-ecr
-        run: |
-          aws ecr get-login-password --region "$AWS_REGION" |
-          docker login \
-          --username AWS \
-          --password-stdin "$ECR_REGISTRY"
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Build Docker image
         run: |
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }} .
+          docker build \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }} \
+            .
 
       - name: Push Docker image
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ github.sha }}
+          docker push \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
