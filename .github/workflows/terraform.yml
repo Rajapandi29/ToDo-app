@@ -16,6 +16,9 @@ on:
           - plan
           - apply
           - destroy
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: todo-app-dev
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
