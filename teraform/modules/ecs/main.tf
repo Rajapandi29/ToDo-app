@@ -27,9 +27,9 @@ resource "aws_iam_role" "execution_role" {
     assume_role_policy = jsonencode({
         Version = "2012-10-17"
         Statement = [{
-            Action   = "sts:AsssumRole"
-            Effect   = "Allow"
-            Principal = { Service = "ecs-tasks.amazonaws.com" 
+            Action     = "sts:AssumRole"
+            Effect     = "Allow"
+            Principal  = { Service = "ecs-tasks.amazonaws.com" 
             }
         }]
     })
