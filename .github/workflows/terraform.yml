@@ -67,15 +67,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t "${var.project_name}-${var.environment}":${{ github.sha }}-latest .
+          docker build -t todo-app-dev:${{ github.sha }}-latest .
 
       - name: Tag Docker image
         run: |
-          docker tag "${var.project_name}-${var.environment}":${{ github.sha }}-latest \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/"${var.project_name}-${var.environment}":${{ github.sha }}-latest
+          docker tag todo-app-dev:${{ github.sha }}-latest \
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
 
       - name: Push Docker image
         run: |
           docker push \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/"${var.project_name}-${var.environment}":${{ github.sha }}-latest
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
   
