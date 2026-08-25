@@ -16,7 +16,7 @@ resource "aws_sns_topic_subscription" "email_alart"{
     protocol  = "email"
     endpoint  = var.alerts_email
 }
-resource "aws_sns_topic_subscription "sms_alert" {
+resource "aws_sns_topic_subscription" "sms_alert" {
     count      = var.alert_phone != "" ? 1 : 0
     topic_arn  = aws_sns_topic.alerts.arn
     protocol   = "sms"
@@ -31,7 +31,7 @@ resource "aws_sns_topic_policy" "allow_cloudwatch_eventbridge_publish" {
             Sid       = "AllowPublish"
             Effect    = "Allow"
             Principal = {Service = [evevnts.amazonaws.com", "cloudwatch.amazonaws.com"]}
-            Action    = "SNS:Publish"
+            Action    = "sns:Publish"
             Resource  = aws_sns_topic.alerts.arn
         }
         ]
