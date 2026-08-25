@@ -64,9 +64,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Login to Amazon ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
+      
 
       - name: Set image variables
         run: |
@@ -78,11 +76,28 @@ jobs:
 
           IMAGE_TAG="${GITHUB_SHA}-latest"
 
+          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> "$GITHUB_ENV"
+          echo "ECR_REPOSITORY=$ECR_REPOSITORY" >> "$GITHUB_ENV"
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+
+          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID"
+          echo "ECR_REPOSITORY=$ECR_REPOSITORY"
+          echo "ECR_REGISTRY=$ECR_REGISTRY"
+          echo "IMAGE_TAG=$IMAGE_TAG"
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" |
+          docker login \
+          --username AWS \
+          --password-stdin "$ECR_REGISTRY"
 
       - name: Build Docker image
         run: |
           docker build \
-          -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
+          -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            .
 
       - name: Push Docker image
         run: |
