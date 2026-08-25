@@ -9,7 +9,7 @@ module "vpc" {
 }
 
 resource "aws_sns_topic" "alerts" {
-    aws_sns_topic = ${var.project_name}-${var.environment}-alerts
+    aws_sns_topic = "${var.project_name}-${var.environment}-alerts"
 }
 resource "aws_sns_topic_subscription" "email_alart"{
     topic_arn = aws_sns_topic.alerts.arn
@@ -25,12 +25,12 @@ resource "aws_sns_topic_subscription" "sms_alert" {
 resource "aws_sns_topic_policy" "allow_cloudwatch_eventbridge_publish" {
     arn = aws_sns_topic.alerts.arn
 
-    policy = jsonencode({
+    policy = jsonencode ({
         Version = "2012-10-17"
         Statement = [{
             Sid       = "AllowPublish"
             Effect    = "Allow"
-            Principal = {Service = [evevnts.amazonaws.com", "cloudwatch.amazonaws.com"]}
+            Principal = {Service = ["evevnts.amazonaws.com", "cloudwatch.amazonaws.com"]}
             Action    = "sns:Publish"
             Resource  = aws_sns_topic.alerts.arn
         }
