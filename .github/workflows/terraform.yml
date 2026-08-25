@@ -50,9 +50,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: terraform init
-      - run: terraform apply -auto-approve
+
   docker-build-deploy:
     needs: terraform-apply
     runs-on: ubuntu-latest
@@ -70,19 +68,19 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: Build ToDo-App Docker image
         run: |
           docker build -t todo-app-dev:${{ github.sha }}-latest .
 
-      - name: Tag Docker image
+      - name: Tag ToDo-App Docker image
         run: |
           docker tag todo-app-dev:${{ github.sha }}-latest \
           646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
 
-      - name: Push Docker image
+      - name: Push ToDo-App Docker image
         run: |
           docker push \
           646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
-
-
-
+      - run: terraform init
+      - run: terraform apply -auto-approve
+  
