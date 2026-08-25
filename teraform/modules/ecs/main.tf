@@ -36,8 +36,8 @@ resource "aws_iam_role" "execution_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role_policy" {
-    role = aws_iam_role.execution_role.name
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+    role       = aws_iam_role.execution_role.name
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 resource"aws_cloudwatch_log_group" "app" {
     name              = "/ecs/${var.project_name}-${var.environment}"
