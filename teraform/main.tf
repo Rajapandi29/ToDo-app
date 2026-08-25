@@ -4,8 +4,8 @@ module "vpc" {
       project_name  = var.project_name
       environment   = var.environment
       vpc_cidr      = var.vpc_cidr
-      public_subnet_cidr = var.public_subnet_cidrs
-      private_subnet_cidr = var.private_subnet_cidrs
+      public_subnet_cidrs = var.public_subnet_cidrs
+      private_subnet_cidrs = var.private_subnet_cidrs
 }
 
 resource "aws_sns_topic" "alerts" {
@@ -16,7 +16,7 @@ resource "aws_sns_topic_subscription" "email_alart"{
     protocol  = "email"
     endpoint  = var.alerts_email
 }
-resource "aws_sns_topic_subscription "sms_alert" "{
+resource "aws_sns_topic_subscription "sms_alert" {
     count      = var.alert_phone != "" ? 1 : 0
     topic_arn  = aws_sns_topic.alerts.arn
     protocol   = "sms"
