@@ -68,19 +68,17 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build ToDo-App Docker image
+      - name: Build Docker image
         run: |
-          docker build -t todo-app-dev:${{ github.sha }}-latest .
+          docker build -t "${var.project_name}-${var.environment}":${{ github.sha }}-latest .
 
-      - name: Tag ToDo-App Docker image
+      - name: Tag Docker image
         run: |
-          docker tag todo-app-dev:${{ github.sha }}-latest \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
+          docker tag "${var.project_name}-${var.environment}":${{ github.sha }}-latest \
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/"${var.project_name}-${var.environment}":${{ github.sha }}-latest
 
-      - name: Push ToDo-App Docker image
+      - name: Push Docker image
         run: |
           docker push \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
-      - run: terraform init
-      - run: terraform apply -auto-approve
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/"${var.project_name}-${var.environment}":${{ github.sha }}-latest
   
