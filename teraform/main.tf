@@ -9,7 +9,7 @@ module "vpc" {
 }
 
 resource "aws_sns_topic" "alerts" {
-    aws_sns_topic = "${var.project_name}-${var.environment}-alerts"
+    name = "${var.project_name}-${var.environment}-alerts"
 }
 resource "aws_sns_topic_subscription" "email_alart"{
     topic_arn = aws_sns_topic.alerts.arn
