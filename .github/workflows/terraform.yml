@@ -17,36 +17,6 @@ on:
           - apply
           - destroy
 jobs:
-  docker-build-deploy:
-    needs: terraform-apply
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build Docker image
-        run: |
-          docker build -t todo-app-dev:${{ github.sha }}-latest .
-
-      - name: Tag Docker image
-        run: |
-          docker tag todo-app-dev:${{ github.sha }}-latest \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
-
-      - name: Push Docker image
-        run: |
-          docker push \
-          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
   terraform-plan:
     runs-on: ubuntu-latest
     defaults:
@@ -83,5 +53,36 @@ jobs:
           aws-region: us-east-1
       - run: terraform init
       - run: terraform apply -auto-approve
+  docker-build-deploy:
+    needs: terraform-apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t todo-app-dev:${{ github.sha }}-latest .
+
+      - name: Tag Docker image
+        run: |
+          docker tag todo-app-dev:${{ github.sha }}-latest \
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
+
+      - name: Push Docker image
+        run: |
+          docker push \
+          646362344732.dkr.ecr.us-east-1.amazonaws.com/todo-app-dev:${{ github.sha }}-latest
+
 
 
