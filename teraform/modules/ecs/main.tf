@@ -15,7 +15,7 @@ resource "aws_security_group" "ecs_sg" {
         cidr_blocks   = ["0.0.0.0/0"]
     }
     tags = {
-        Name = "${var.project_name}-${var.environment}"
+        Name = "${var.project_name}-${var.environment}-ecs-sg"
     }
 }
 resource "aws_ecs_cluster" "this" {
