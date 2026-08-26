@@ -1,26 +1,31 @@
 resource "aws_security_group" "ecs_sg" {
-    name    = "${var.project_name}-${var.environment}"
-    vpc_id  = var.vpc_id
+  name        = "${var.project_name}-${var.environment}-ecs-sg"
+  description = "Allow inbound traffic from ALB to ECS tasks"
+  vpc_id      = var.vpc_id
 
-    ingress {
-        from_port    = var.container_port
-        to_port      = var.container_port
-        protocol     = "tcp"
-        security_groups = [var.alb_sg_id]
-    }
-    egress {
-        from_port     = 0
-        to_port       = 0
-        protocol      = "-1"
-        cidr_blocks   = ["0.0.0.0/0"]
-    }
-    tags = {
-        Name = "${var.project_name}-${var.environment}-ecs-sg"
-    }
+  ingress {
+    from_port       = var.container_port
+    to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [var.alb_sg_id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-ecs-sg"
+  }
 }
+
 resource "aws_ecs_cluster" "this" {
-    name = "${var.project_name}-${var.environment}-cluster"
+  name = "${var.project_name}-${var.environment}-cluster"
 }
+
 resource "aws_iam_role" "execution_role" {
   name = "${var.project_name}-${var.environment}-exec-role"
 
@@ -35,12 +40,13 @@ resource "aws_iam_role" "execution_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role_policy" {
-    role       = aws_iam_role.execution_role.name
-    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  role       = aws_iam_role.execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
-resource"aws_cloudwatch_log_group" "app" {
-    name              = "/ecs/${var.project_name}-${var.environment}"
-    retention_in_days = 14
+
+resource "aws_cloudwatch_log_group" "app" {
+  name              = "/ecs/${var.project_name}-${var.environment}"
+  retention_in_days = 14
 }
 
 resource "aws_ecs_task_definition" "app" {
