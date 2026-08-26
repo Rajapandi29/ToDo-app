@@ -11,7 +11,7 @@ module "vpc" {
 resource "aws_sns_topic" "alerts" {
     name = "${var.project_name}-${var.environment}-alerts"
 }
-resource "aws_sns_topic_subscription" "email_alart"{
+resource "aws_sns_topic_subscription" "email_alart" {
     topic_arn = aws_sns_topic.alerts.arn
     protocol  = "email"
     endpoint  = var.alerts_email
@@ -30,8 +30,8 @@ resource "aws_sns_topic_policy" "allow_cloudwatch_eventbridge_publish" {
         Statement = [{
             Sid       = "AllowPublish"
             Effect    = "Allow"
-            Principal = {Service = ["cloudwatch.amazonaws.com", "events.amazonaws.com"]}
-            Action    = "sns:Publish"
+            Principal = {Service = ["events.amazonaws.com", "cloudwatch.amazonaws.com"]}
+            Action    = "SNS:Publish"
             Resource  = aws_sns_topic.alerts.arn
         }
         ]
