@@ -35,7 +35,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: terraform
+        working-directory: teraform
 
     steps:
 
@@ -71,7 +71,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: terraform
+        working-directory: teraform
 
     steps:
 
