@@ -1,110 +1,47 @@
 variable "project_name" {
-  type        = string
-  description = "Todo application project name"
+    type    = string
+    default = "sample"
 }
-
 variable "environment" {
-  type        = string
-  description = "Environment name"
+    type    = string
+    default = "dev"
 }
-
 variable "aws_region" {
-  type        = string
-  description = "AWS region"
+    type     = string
+    default  = "us-east-1" 
 }
-
-
-
 variable "vpc_cidr" {
-  type        = string
-  description = "VPC CIDR block"
+    type    = string
+    default = "10.0.0.0/16"
 }
-
 variable "public_subnet_cidrs" {
-  type        = list(string)
-  description = "Public subnet CIDR blocks"
+    type    = list(string)
+    default = ["10.0.1.0/24", "10.0.12.0/24"] 
 }
-
 variable "private_subnet_cidrs" {
-  type        = list(string)
-  description = "Private subnet CIDR blocks"
+    type  = list(string)
+    default = ["10.0.11.0/24", "10.0.12.0/24"]
 }
-
-
-
 variable "container_port" {
-  type        = number
-  description = "Todo application container port"
+    type    = number
+    default = 8080
 }
-
 variable "cpu" {
-  type        = number
-  description = "Todo ECS CPU"
+    type    = number
+    default = 256
 }
-
 variable "memory" {
-  type        = number
-  description = "Todo ECS memory"
+    type    = number
+    default = 512
 }
-
 variable "desired_count" {
-  type        = number
-  description = "Todo ECS desired task count"
+    type    =  number
+    default = 1
 }
-
-
 variable "alerts_email" {
-  type        = string
-  description = "SNS alert email address"
+    type   = string
 }
-
 variable "alert_phone" {
-  type        = string
-  description = "SNS alert phone number"
-
-  default = ""
-}
-
-
-variable "alb_name" {
-  type        = string
-  description = "Existing ALB name created by the S3 ALB module"
-}
-
-
-variable "sample_project_name" {
-  type        = string
-  description = "Sample application project name"
-}
-
-variable "sample_container_port" {
-  type        = number
-  description = "Sample application container port"
-}
-
-variable "sample_cpu" {
-  type        = number
-  description = "Sample ECS CPU"
-}
-
-variable "sample_memory" {
-  type        = number
-  description = "Sample ECS memory"
-}
-
-variable "sample_desired_count" {
-  type        = number
-  description = "Sample ECS desired task count"
-}
-
-
-
-variable "sample_health_check_path" {
-  type        = string
-  description = "Sample application health check path"
-}
-
-variable "sample_listener_priority" {
-  type        = number
-  description = "ALB listener rule priority for Sample application"
+    type    = string
+    default = ""
 }
